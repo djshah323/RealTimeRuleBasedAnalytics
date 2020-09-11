@@ -1,5 +1,7 @@
 package com.realanalytics.RealAnalytics.Events.Cases;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.realanalytics.RealAnalytics.Data.AnalyticEvent;
 
 public class EventCase {
@@ -20,8 +22,17 @@ public class EventCase {
 		this.caseName = caseName;
 	}
 
-	public AnalyticEvent getEvent() {
-		return event;
+	public String getEvent() {
+		ObjectMapper mapper = new ObjectMapper();
+		String evenStr = "";
+		try {
+			evenStr = mapper.writerWithDefaultPrettyPrinter()
+					.writeValueAsString(event);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return evenStr;
 	}
 
 	public void setEvent(AnalyticEvent event) {

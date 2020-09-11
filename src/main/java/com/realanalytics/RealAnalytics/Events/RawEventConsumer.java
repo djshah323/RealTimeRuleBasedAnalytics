@@ -18,7 +18,7 @@ public class RawEventConsumer {
     private EventService eventService;
     
     @KafkaListener(topics = EventService.RAW_EVENT_TOPIC, 
-            groupId = "rawevents")
+            groupId = "event_gen")
     public void consume(ConsumerRecord record) 
     {
         eventService.process((String)record.key(), (String)record.value());

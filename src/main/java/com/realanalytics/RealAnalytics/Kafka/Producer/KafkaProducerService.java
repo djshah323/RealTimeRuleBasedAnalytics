@@ -16,7 +16,7 @@ public class KafkaProducerService {
 	            LoggerFactory.getLogger(KafkaProducerService.class);
 	 
 	@Autowired
-	private KafkaTemplate<String, AnalyticEvent> kafkaTemplate;
+	private KafkaTemplate<String, String> kafkaTemplate;
 	  
 	public void send(EventCase c) {
 		kafkaTemplate.send(KafkaUtils.getTopicForCase(c.getCaseName()), c.getEvent());

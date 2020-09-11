@@ -71,8 +71,7 @@ public final class EventService {
 	@Autowired
 	private KafkaProducerService casePushService;
 	
-	@RequestMapping(
-			value = "v1/events/{appName}",
+	@RequestMapping(value = "v1/events/{appName}",
 			method = RequestMethod.POST,
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> postEvent(@PathVariable String appName, 
