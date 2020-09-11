@@ -16,15 +16,15 @@ import com.realanalytics.RealAnalytics.Identity.BadEventException;
 
 @Service
 public class EventSanity {
-	
-	
+		
 	public void check(AppReferer application, Map<String, Object> rawEvent) 
 			throws BadEventException {
-		Class appClass = application.getApplicationClass();
+		Class<?> appClass = application.getApplicationClass();
 		Field[] fields = appClass.getDeclaredFields();
 		List<Field> allFields = new ArrayList<Field>(Arrays.asList(fields));
 		List<Field> mandatoryFields = allFields.stream().filter(
-				field -> field.isAnnotationPresent(EventRequirement.class)).collect(Collectors.toList());
+				field -> field.isAnnotationPresent(EventRequirement.class))
+				.collect(Collectors.toList());
 		for(Field field : mandatoryFields) {
 			if (!rawEvent.containsKey(field.getName()))
 				throw new BadEventException();

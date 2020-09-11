@@ -51,8 +51,7 @@ public final class EventService {
 	
 	private static final Logger logger = 
 	            LoggerFactory.getLogger(EventService.class);
-	
-	
+		
 	@Autowired
 	private EventSanity eventSanity;
 	

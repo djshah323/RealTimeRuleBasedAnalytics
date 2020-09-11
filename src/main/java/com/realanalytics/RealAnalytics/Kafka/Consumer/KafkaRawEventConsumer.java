@@ -1,4 +1,4 @@
-package com.realanalytics.RealAnalytics.Events;
+package com.realanalytics.RealAnalytics.Kafka.Consumer;
 
 
 import org.slf4j.Logger;
@@ -6,13 +6,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+
+import com.realanalytics.RealAnalytics.Events.EventService;
+
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
  
 @Service
-public class RawEventConsumer {
+public class KafkaRawEventConsumer {
     private final Logger logger = 
-            LoggerFactory.getLogger(RawEventConsumer.class);
+            LoggerFactory.getLogger(KafkaRawEventConsumer.class);
     
     @Autowired
     private EventService eventService;
