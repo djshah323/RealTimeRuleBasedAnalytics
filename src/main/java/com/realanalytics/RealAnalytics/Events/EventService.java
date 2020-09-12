@@ -28,16 +28,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.realanalytics.RealAnalytics.Applications.AppReferer;
+import com.realanalytics.RealAnalytics.Applications.Events.ApplicationEvent;
 import com.realanalytics.RealAnalytics.Dao.AnalyticEventRepository;
 import com.realanalytics.RealAnalytics.Data.AnalyticEvent;
-import com.realanalytics.RealAnalytics.Events.Cases.EventCase;
-import com.realanalytics.RealAnalytics.Events.Cases.EventCaseParser;
 import com.realanalytics.RealAnalytics.Events.Services.EventMapper;
 import com.realanalytics.RealAnalytics.Events.Services.EventSanity;
 import com.realanalytics.RealAnalytics.Exceptions.IllegalAppNameException;
 import com.realanalytics.RealAnalytics.Identity.BadEventException;
-import com.realanalytics.RealAnalytics.Kafka.Producer.KafkaProducerService;
-import com.realanalytics.RealAnalytics.Kafka.Producer.KafkaRawEventProducer;
+import com.realanalytics.RealAnalytics.Kafka.Producer.KafkaEventPublisher;
 
 /**
  * @author SDhaval
@@ -53,22 +51,20 @@ public final class EventService {
 	            LoggerFactory.getLogger(EventService.class);
 		
 	@Autowired
-	private EventSanity eventSanity;
+	ObjectMapper mapper ;
+	
+	@Autowired
+	private EventSanity<?> eventSanity;
 	
 	@Autowired
 	private EventMapper eventMapper;
 	
 	@Autowired
-	private EventCaseParser eventCaseParser;
-	
-	@Autowired
-	private KafkaRawEventProducer eventPushService;
+	private KafkaEventPublisher eventPublishingService;
 	
 	@Autowired
 	private AnalyticEventRepository eventRepo;
 	
-	@Autowired
-	private KafkaProducerService casePushService;
 	
 	@RequestMapping(value = "v1/events/{appName}",
 			method = RequestMethod.POST,
@@ -76,11 +72,12 @@ public final class EventService {
 	public ResponseEntity<?> postEvent(@PathVariable String appName, 
 						   @RequestBody Map<String, Object> rawEvent) {
 		try {
+			/*
+			 * Publish the event ASAP to kafka to free up the receiver rest endpoints
+			 */
 			AppReferer app = Utils.getAppDetails(appName);
-			ObjectMapper mapper = new ObjectMapper();
-			String rawEventJson = mapper.writerWithDefaultPrettyPrinter()
-					.writeValueAsString(rawEvent);
-			eventPushService.sendMessage(app.name(), rawEventJson);
+			eventPublishingService.sendRawEvent(app.name(), 
+					mapper.writeValueAsString(rawEvent));
 		} catch (IllegalAppNameException e) {
 			logger.error("Illegal app name");
 			return new ResponseEntity<>(response(e.getMessage()), HttpStatus.BAD_REQUEST);
@@ -94,25 +91,48 @@ public final class EventService {
 	
 	public void process(String appName, String eventJson) {
 		try {
-			AnalyticEvent ae;		
-			@SuppressWarnings("unchecked")
-			Map<String, Object> rawEvent = (HashMap<String, Object>) 
-								new ObjectMapper().readValue(eventJson, HashMap.class);			
-			AppReferer app = Utils.getAppDetails(appName);
-			eventSanity.check(app, rawEvent);
-			ae = eventMapper.translateToAnalyticEvent(app, rawEvent);
-			for(EventCase ec : eventCaseParser.buildCases(ae)) {
-				casePushService.send(ec);
-			}
+			AppReferer app;
+			ApplicationEvent appevent;
+			AnalyticEvent ae;	
+			
+			/*
+			 * Fetch application description using the kafka key
+			 */
+			app = Utils.getAppDetails(appName);
+			
+			/*
+			 * Check if the raw event is usable i.e it contains all the properties as required by application
+			 */
+			appevent = eventSanity.check(app, eventJson);			
+			logger.info("ApplicationEvent parsed: " + mapper
+					.writerWithDefaultPrettyPrinter()
+					.writeValueAsString(appevent));
+			/*
+			 * Create an Analytic event out of it. Analytic event is the common event format on top which 
+			 * analytic logic is written. Multiple app finally generate this event. 
+			 */
+			ae = eventMapper.translateToAnalyticEvent(appevent);		
+			logger.info("AnalyticEvent created: " + mapper
+					.writerWithDefaultPrettyPrinter()
+					.writeValueAsString(ae));
+			
+			/*
+			 * Publish the analytic event for further processing by KafkaStreams. 
+			 */
+			eventPublishingService.sendAnalyticEvent(ae);	
+			logger.info("Analytic Event pushed to kakfa for further analysis" );
+			/*
+			 * Commit the event in mongo. 
+			 */
 			eventRepo.save(ae);
+			logger.info("Analytic Event saved to Mongo");
+			
 		} catch(IllegalAppNameException e) {
 			logger.error("Illegal app name");
-		} catch (JsonParseException|JsonMappingException e) {
-			logger.error("Exception parsing raw event");
-		}  catch (IOException e) {
-			logger.error("IO Exception parsing raw event");
 		} catch (BadEventException e) {
 			logger.error("BadEventException parsing raw event");
+		} catch (JsonProcessingException e) {
+			logger.error("JsonProcessingException parsing raw event");
 		}
 	}
 }

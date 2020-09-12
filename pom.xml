@@ -55,8 +55,25 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
+		<dependency>
+    		<groupId>org.apache.samza</groupId>
+    		<artifactId>samza-core_2.12</artifactId>
+    		<version>1.5.1</version>
+		</dependency>
+		<dependency>
+    		<groupId>org.apache.samza</groupId>
+    		<artifactId>samza-kafka_2.12</artifactId>
+   			<version>1.5.1</version>
+		</dependency>
+		<dependency>
+   			<groupId>org.apache.kafka</groupId>
+    		<artifactId>kafka-streams</artifactId>
+		</dependency>
+		<dependency>
+    		<groupId>org.apache.kafka</groupId>
+    		<artifactId>kafka-clients</artifactId>
+		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>

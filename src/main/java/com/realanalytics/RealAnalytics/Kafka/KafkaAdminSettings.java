@@ -47,6 +47,15 @@ public class KafkaAdminSettings {
 	}
 	
 	@Bean
+	public NewTopic analyticevent() {
+		return TopicBuilder.name(KafkaConstants.ANALYTIC_EVENT_TOPIC)
+				.partitions(2)
+				.replicas(1)
+				.config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
+				.build();
+	}
+	
+	@Bean
 	public NewTopic loginCase() {
 		return TopicBuilder.name(KafkaConstants.LOGIN_CASE_TOPIC)
 				.partitions(2)
@@ -55,14 +64,6 @@ public class KafkaAdminSettings {
 				.build();
 	}
 	
-	@Bean
-	public NewTopic loginAnalysisCase() {
-		return TopicBuilder.name(KafkaConstants.LOGIN_CASE_ANALYSIS_TOPIC)
-				.partitions(2)
-				.replicas(1)
-				.config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
-				.build();
-	}
 	
 	@Bean
 	public NewTopic locCase() {
@@ -73,14 +74,6 @@ public class KafkaAdminSettings {
 				.build();
 	}
 	
-	@Bean
-	public NewTopic locAnalysisCase() {
-		return TopicBuilder.name(KafkaConstants.LOGIN_CASE_ANALYSIS_TOPIC)
-				.partitions(2)
-				.replicas(1)
-				.config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
-				.build();
-	}
 	
 	@Bean
 	public Map<String, Object> producerConfigs() {

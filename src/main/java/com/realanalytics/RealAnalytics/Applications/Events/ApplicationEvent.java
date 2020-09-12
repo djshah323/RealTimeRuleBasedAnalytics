@@ -1,7 +1,11 @@
 package com.realanalytics.RealAnalytics.Applications.Events;
 
-public interface ApplicationEvent {
+import com.realanalytics.RealAnalytics.Data.AnalyticEvent;
 
+public interface ApplicationEvent {
+	
+	public AnalyticEvent analyticEvent();
+	
 }
 
 
