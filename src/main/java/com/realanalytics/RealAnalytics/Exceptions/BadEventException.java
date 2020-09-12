@@ -1,4 +1,4 @@
-package com.realanalytics.RealAnalytics.Identity;
+package com.realanalytics.RealAnalytics.Exceptions;
 
 public class BadEventException extends Exception {
 

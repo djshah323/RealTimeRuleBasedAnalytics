@@ -13,14 +13,8 @@ import com.realanalytics.RealAnalytics.Data.AnalyticEvent;
 public class EventMapper {
 
 
-	public AnalyticEvent translateToAnalyticEvent(ApplicationEvent appevent) {
-		AnalyticEvent ae = null;
-		try {
-			ae = appevent.analyticEvent();
-		} catch (NullPointerException e) {
-			
-		}
-		return ae;
+	public AnalyticEvent createAnalyticEvent(ApplicationEvent appevent) {
+		return appevent.analyticEvent();
 	}
 
 

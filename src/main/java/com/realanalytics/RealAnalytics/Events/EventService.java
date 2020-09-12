@@ -33,8 +33,8 @@ import com.realanalytics.RealAnalytics.Dao.AnalyticEventRepository;
 import com.realanalytics.RealAnalytics.Data.AnalyticEvent;
 import com.realanalytics.RealAnalytics.Events.Services.EventMapper;
 import com.realanalytics.RealAnalytics.Events.Services.EventSanity;
+import com.realanalytics.RealAnalytics.Exceptions.BadEventException;
 import com.realanalytics.RealAnalytics.Exceptions.IllegalAppNameException;
-import com.realanalytics.RealAnalytics.Identity.BadEventException;
 import com.realanalytics.RealAnalytics.Kafka.Producer.KafkaEventPublisher;
 
 /**
@@ -111,7 +111,7 @@ public final class EventService {
 			 * Create an Analytic event out of it. Analytic event is the common event format on top which 
 			 * analytic logic is written. Multiple app finally generate this event. 
 			 */
-			ae = eventMapper.translateToAnalyticEvent(appevent);		
+			ae = eventMapper.createAnalyticEvent(appevent);		
 			logger.info("AnalyticEvent created: " + mapper
 					.writerWithDefaultPrettyPrinter()
 					.writeValueAsString(ae));

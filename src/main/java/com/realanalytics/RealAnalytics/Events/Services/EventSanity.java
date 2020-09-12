@@ -18,7 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.realanalytics.RealAnalytics.Applications.AppReferer;
 import com.realanalytics.RealAnalytics.Applications.Events.ApplicationEvent;
 import com.realanalytics.RealAnalytics.Applications.Events.EventRequirement;
-import com.realanalytics.RealAnalytics.Identity.BadEventException;
+import com.realanalytics.RealAnalytics.Exceptions.BadEventException;
 
 
 @Service
