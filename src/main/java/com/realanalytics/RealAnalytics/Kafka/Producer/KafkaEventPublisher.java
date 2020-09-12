@@ -47,7 +47,7 @@ public class KafkaEventPublisher {
   public void sendAnalyticEvent(AnalyticEvent ae) {	  
 	ListenableFuture<SendResult<String, String>> future;
 	try {
-		future = this.kafkaTemplate.send(KafkaConstants.ANALYTIC_EVENT_TOPIC, 
+		future = this.kafkaTemplate.send(KafkaConstants.ANALYTIC_EVENT_TOPIC, ae.getEventActorId(),
 				mapper.writeValueAsString(ae));
 		future.addCallback(new ListenableFutureCallback<SendResult<String, String>>() {
 		      @Override
