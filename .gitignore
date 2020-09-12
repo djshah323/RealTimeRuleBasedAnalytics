@@ -34,3 +34,6 @@ build/
 
 ### Kafka Streams ###
 data/
+
+### Geo IP Database ###
+src/main/resources/GeoLite2-City.mmdb
