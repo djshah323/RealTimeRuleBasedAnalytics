@@ -6,6 +6,9 @@ import java.util.Map;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.realanalytics.RealAnalytics.Data.Geo.GeoIP;
+import com.realanalytics.RealAnalytics.Data.Geo.GeoIPService;
+
 @Document(collection = "AnalyticEvent")
 public class AnalyticEvent {
 	
@@ -38,6 +41,7 @@ public class AnalyticEvent {
     private String thirdPartyApp;
     private String srcIp;
     private Map<String, String> otherProperties;
+    private GeoIP geoIP;
     
     public AnalyticEvent(String id) {
     	this.eventId = id;
@@ -190,4 +194,11 @@ public class AnalyticEvent {
 		this.eventTargetId = eventTargetId;
 	}
 
+	public void setGeoIP(GeoIP geoIP) {
+		this.geoIP = geoIP;
+	}
+
+	public GeoIP getGeoIP() {
+		return this.geoIP;
+	}
 }
