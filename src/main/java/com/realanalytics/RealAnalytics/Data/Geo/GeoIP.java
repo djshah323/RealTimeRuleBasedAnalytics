@@ -10,6 +10,10 @@ public class GeoIP {
     	
     }
     
+    public String getCountry() {
+  		return countryName;		
+  	}
+    
     private void setCountry(String country) {
 		this.countryName = country;		
 	}

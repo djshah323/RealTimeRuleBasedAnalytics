@@ -24,7 +24,7 @@ public class AnalyticEvent {
 	}
 	
 	@Id
-	private final String eventId;	
+	private String eventId;	
 	private String applicationName;
 	private String eventDate;
 	private String eventObject;
@@ -37,11 +37,16 @@ public class AnalyticEvent {
     private String eventTargetId;
     private String eventAudience;
     private Map<String, String> device;
-    private String eventCountry;
     private String thirdPartyApp;
     private String srcIp;
     private Map<String, String> otherProperties;
     private GeoIP geoIP;
+    private String status;
+    
+    public AnalyticEvent() {
+    	device = new HashMap<String, String>();
+    	otherProperties = new HashMap<String, String>();
+    }
     
     public AnalyticEvent(String id) {
     	this.eventId = id;
@@ -49,6 +54,10 @@ public class AnalyticEvent {
     	otherProperties = new HashMap<String, String>();
     }
 
+    public void setEventId(String id) {
+    	eventId = id;
+    }
+    
     public String getEventId() {
     	return eventId;
     }
@@ -138,13 +147,6 @@ public class AnalyticEvent {
 			this.device.put("deviceAuth", AuthType.PersonalToken.name());
 	}
 	
-	public String getEventCountry() {
-		return eventCountry;
-	}
-
-	public void setEventCountry(String eventCountry) {
-		this.eventCountry = eventCountry;
-	}
 
 	public String getThirdPartyApp() {
 		return thirdPartyApp;
@@ -200,5 +202,39 @@ public class AnalyticEvent {
 
 	public GeoIP getGeoIP() {
 		return this.geoIP;
+	}
+
+	public Map<String,String> extractLoginDevices() {
+		Map<String, String> eventDetails = new HashMap<String, String>();
+		eventDetails.put("case", "loginDevice");
+		eventDetails.put("eventActorId", getEventActorId());
+		eventDetails.put("time", getEventDate());
+		eventDetails.put("application",getThirdPartyApp());
+		eventDetails.put("deviceType", getDeviceType());
+		eventDetails.put("deviceName", getDeviceName());
+		eventDetails.put("auth", getDeviceAuth());
+		eventDetails.put("result", getStatus());
+		return eventDetails;
+	}
+
+	public  Map<String,String> extractGeoInfo() {
+		Map<String, String> eventDetails = new HashMap<String, String>();
+		eventDetails.put("case", "loginLocation");
+		eventDetails.put("eventActorId", getEventActorId());
+		eventDetails.put("time", getEventDate());
+		eventDetails.put("country", geoIP.getCountry());
+		eventDetails.put("city", geoIP.getCity());
+		eventDetails.put("lat", geoIP.getLatitude());
+		eventDetails.put("lon", geoIP.getLongitude());
+		eventDetails.put("result", getStatus());
+		return eventDetails;
+	}
+
+	public void setStatus(String resultStatus) {
+		status = resultStatus;
+	}
+	
+	public String getStatus() {
+		return status;
 	}
 }

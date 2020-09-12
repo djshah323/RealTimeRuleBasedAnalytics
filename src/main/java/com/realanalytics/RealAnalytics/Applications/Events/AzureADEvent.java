@@ -82,6 +82,7 @@ public class AzureADEvent implements ApplicationEvent {
 		newEvent.setApplicationName(AppReferer.AzureAD.name());
 		
 		newEvent.setEventAction(Operation);
+		newEvent.setStatus(ResultStatus);
 		
 		newEvent.setEventActor(UserId);
 		newEvent.setEventActorId(Actor.get(0).get("ID"));
@@ -97,8 +98,9 @@ public class AzureADEvent implements ApplicationEvent {
 		newEvent.setEventObject(TargetContextId);
 		
 		newEvent.setSrcIp(this.ClientIP);
-		//newEvent.setEvntCountry(evntCountry);
+		
 		newEvent.setThirdPartyApp(appIdNameMapper.get(ApplicationId));
+		
 		return newEvent;
 	}
 	
