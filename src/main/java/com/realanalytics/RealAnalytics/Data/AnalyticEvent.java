@@ -139,12 +139,14 @@ public class AnalyticEvent {
 	}
 
 	public void setDeviceAuth(String name) {
-		if (name.contains(AuthType.OAuth2.name()))
-			this.device.put("deviceAuth", AuthType.OAuth2.name());
-		else if (name.contains(AuthType.Password.name()))
-			this.device.put("deviceAuth", AuthType.Password.name());
-		else if (name.contains(AuthType.PersonalToken.name()))
-			this.device.put("deviceAuth", AuthType.PersonalToken.name());
+		if (name != null) {
+			if (name.contains(AuthType.OAuth2.name()))
+				this.device.put("deviceAuth", AuthType.OAuth2.name());
+			else if (name.contains(AuthType.Password.name()))
+				this.device.put("deviceAuth", AuthType.Password.name());
+			else if (name.contains(AuthType.PersonalToken.name()))
+				this.device.put("deviceAuth", AuthType.PersonalToken.name());
+		}
 	}
 	
 
@@ -204,8 +206,8 @@ public class AnalyticEvent {
 		return this.geoIP;
 	}
 
-	public Map<String,String> extractLoginDevices() {
-		Map<String, String> eventDetails = new HashMap<String, String>();
+	public HashMap<String,String> extractLoginDevices() {
+		HashMap<String, String> eventDetails = new HashMap<String, String>();
 		eventDetails.put("case", "loginDevice");
 		eventDetails.put("eventActorId", getEventActorId());
 		eventDetails.put("time", getEventDate());
@@ -213,12 +215,13 @@ public class AnalyticEvent {
 		eventDetails.put("deviceType", getDeviceType());
 		eventDetails.put("deviceName", getDeviceName());
 		eventDetails.put("auth", getDeviceAuth());
+		eventDetails.put("operation", getEventAction());
 		eventDetails.put("result", getStatus());
 		return eventDetails;
 	}
 
-	public  Map<String,String> extractGeoInfo() {
-		Map<String, String> eventDetails = new HashMap<String, String>();
+	public  HashMap<String,String> extractGeoInfo() {
+		HashMap<String, String> eventDetails = new HashMap<String, String>();
 		eventDetails.put("case", "loginLocation");
 		eventDetails.put("eventActorId", getEventActorId());
 		eventDetails.put("time", getEventDate());
@@ -226,6 +229,7 @@ public class AnalyticEvent {
 		eventDetails.put("city", geoIP.getCity());
 		eventDetails.put("lat", geoIP.getLatitude());
 		eventDetails.put("lon", geoIP.getLongitude());
+		eventDetails.put("operation", getEventAction());
 		eventDetails.put("result", getStatus());
 		return eventDetails;
 	}

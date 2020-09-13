@@ -3,8 +3,6 @@
  */
 package com.realanalytics.RealAnalytics.Events;
 
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -23,9 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static com.realanalytics.RealAnalytics.Events.Utils.response;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.realanalytics.RealAnalytics.Applications.AppReferer;
 import com.realanalytics.RealAnalytics.Applications.Events.ApplicationEvent;

@@ -74,6 +74,23 @@ public class KafkaAdminSettings {
 				.build();
 	}
 	
+	@Bean
+	public NewTopic alerts() {
+		return TopicBuilder.name(KafkaConstants.ALERTS_TOPIC)
+				.partitions(2)
+				.replicas(1)
+				.config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
+				.build();
+	}
+	
+	@Bean
+	public NewTopic notifs() {
+		return TopicBuilder.name(KafkaConstants.NOTIF_TOPIC)
+				.partitions(2)
+				.replicas(1)
+				.config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
+				.build();
+	}
 	
 	@Bean
 	public Map<String, Object> producerConfigs() {
