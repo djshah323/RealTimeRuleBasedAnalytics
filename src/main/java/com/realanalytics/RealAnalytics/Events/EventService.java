@@ -89,8 +89,7 @@ public final class EventService {
 		try {
 			AppReferer app;
 			ApplicationEvent appevent;
-			AnalyticEvent ae;	
-			
+			AnalyticEvent ae;		
 			/*
 			 * Fetch application description using the kafka key
 			 */

@@ -312,7 +312,7 @@ public class KafkaStreamsConfigAnalyticEvents {
 		});
     	
     	/*
-    	 * By Device
+    	 * By Country
     	 */
     	locCaseT.filter(KafkaStreamsConfigAnalyticEvents.notNull())
 		.map((key, value) -> {
