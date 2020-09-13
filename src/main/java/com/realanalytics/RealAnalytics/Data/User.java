@@ -18,11 +18,15 @@ public class User {
 	
 	private String appname;
 	
-	public User(String firstName, String lastName, String email) {
+	private String location;
+	
+	public User(String firstName, String lastName, String email, String location) {
+		id = java.util.UUID
+				.nameUUIDFromBytes(email.getBytes()).toString();
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
-		id = java.util.UUID.nameUUIDFromBytes(email.getBytes()).toString();
+		this.setLocation(location);
 	}
 	public String getId() {
 		return id;
@@ -41,6 +45,12 @@ public class User {
 	}
 	public void setAppname(String appname) {
 		this.appname = appname;
+	}
+	public String getLocation() {
+		return location;
+	}
+	public void setLocation(String location) {
+		this.location = location;
 	}
 
 }

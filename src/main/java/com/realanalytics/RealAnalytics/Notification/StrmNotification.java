@@ -9,7 +9,7 @@ public class StrmNotification
 	/*
 	 * Number of occurrences
 	 */
-	private Long count;
+	private Long count = (long) 0;
 	
 	/*
 	 * User

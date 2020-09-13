@@ -9,10 +9,8 @@ import static com.realanalytics.RealAnalytics.Kafka.Streams.Utils.fetchFromParse
 
 import com.realanalytics.RealAnalytics.Kafka.KafkaConstants;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.realanalytics.RealAnalytics.Data.AnalyticEvent;
-import com.realanalytics.RealAnalytics.Events.EventService;
 import com.realanalytics.RealAnalytics.Kafka.Serdes.AnalyticEventDeserializer;
 import com.realanalytics.RealAnalytics.Kafka.Serdes.AnalyticEventSerializer;
 import com.realanalytics.RealAnalytics.Kafka.Serdes.StrmNotificationDeserializer;
@@ -27,7 +25,6 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
-import org.apache.kafka.streams.kstream.Grouped;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Predicate;

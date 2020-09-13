@@ -19,8 +19,21 @@ public interface Alert {
 		FailedLogin,
 		SharedLogin,
 		RiskyLogin,
-		DDOS;
+		DDOS,
+		Info;
 	}
 	
+	public String user();
 	
+	public String application();
+	
+	public Severity severity();
+	
+	public AlertType type();
+	
+	public long getPolicyId();
+	
+	public String getPolicyName();
+
+	long timeInMillis();
 }
