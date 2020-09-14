@@ -19,7 +19,9 @@ public class AnalyticEvent {
 	public enum AuthType {
 		Password,
 		OAuth2,
-		PersonalToken
+		PersonalToken,
+		WsTrust,
+		Other
 	}
 	
 	@Id
@@ -145,9 +147,12 @@ public class AnalyticEvent {
 				this.device.put("deviceAuth", AuthType.Password.name());
 			else if (name.contains(AuthType.PersonalToken.name()))
 				this.device.put("deviceAuth", AuthType.PersonalToken.name());
+			else if (name.contains(AuthType.WsTrust.name())) 
+				this.device.put("deviceAuth", AuthType.WsTrust.name());
+			else this.device.put("deviceAuth",  AuthType.Other.name());
+			}
+			
 		}
-	}
-	
 
 	public String getThirdPartyApp() {
 		return thirdPartyApp;

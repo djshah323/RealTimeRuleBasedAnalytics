@@ -120,6 +120,7 @@ public final class EventService {
 			 * Commit the event in mongo. 
 			 */
 			eventRepo.save(ae);
+			
 			logger.info("Analytic Event saved to Mongo");
 			
 		} catch(IllegalAppNameException e) {
