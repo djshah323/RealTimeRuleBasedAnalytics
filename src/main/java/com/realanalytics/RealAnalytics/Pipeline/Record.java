@@ -1,17 +1,21 @@
 package com.realanalytics.RealAnalytics.Pipeline;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Record {
 	
-	ArrayList<Attribute> attr;
+	Map<String, Attribute> attr;
 	
 	public Record() {
-		attr = new ArrayList<Attribute>();
+		attr = new HashMap<String, Attribute>();
 	}
 	
-	public void addAttribute(Attribute attr) {
-		this.attr.add(attr);
+	public void add(Attribute attr) {
+		this.attr.put(attr.getName(), attr);
 	}
 	
+	public Attribute get(String name) {
+		return this.attr.get(name);
+	}
 }

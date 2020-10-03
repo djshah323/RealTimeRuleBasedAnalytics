@@ -1,6 +1,8 @@
 package com.realanalytics.RealAnalytics.Pipeline.Rule;
 
-import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.kstream.KStream;
+
+import com.realanalytics.RealAnalytics.Pipeline.Record;
 
 public class Rule {
 	
@@ -14,8 +16,8 @@ public class Rule {
 		this.name = name;
 	}
 	
-	public void apply(StreamsBuilder builder) {
-		action.apply(condition, builder);
+	public void apply(KStream<String, Record> stream) {
+		action.apply(condition, stream);
 	}
 
 	public void condition(Condition instantiate) {

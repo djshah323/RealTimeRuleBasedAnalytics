@@ -21,4 +21,8 @@ public class PipelineRepository {
 	public void save(Pipeline p) {
 		mongoTemplate.save(p);
 	}
+	
+	public Pipeline findOne() {
+		return findAll().get(0);
+	}
 }

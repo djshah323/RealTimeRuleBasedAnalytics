@@ -7,10 +7,13 @@ import com.realanalytics.RealAnalytics.Dao.PipelineRepository;
 import com.realanalytics.RealAnalytics.Data.AnalyticEvent;
 import com.realanalytics.RealAnalytics.Kafka.Serdes.AnalyticEventDeserializer;
 import com.realanalytics.RealAnalytics.Kafka.Serdes.AnalyticEventSerializer;
+import com.realanalytics.RealAnalytics.Kafka.Serdes.RecordDeserializer;
+import com.realanalytics.RealAnalytics.Kafka.Serdes.RecordSerializer;
 import com.realanalytics.RealAnalytics.Kafka.Serdes.StrmNotificationDeserializer;
 import com.realanalytics.RealAnalytics.Kafka.Serdes.StrmNotificationSerializer;
 import com.realanalytics.RealAnalytics.Notification.StrmNotification;
 import com.realanalytics.RealAnalytics.Pipeline.Pipeline;
+import com.realanalytics.RealAnalytics.Pipeline.Record;
 import com.realanalytics.RealAnalytics.Pipeline.Rule.Rule;
 
 import org.apache.kafka.common.serialization.Serdes;
@@ -46,13 +49,13 @@ import java.util.Set;
 import java.util.TreeMap;
 
 @Configuration
-public class KafkaStreamsConfigAnalyticEvents {
+public class KafkaStreamsBuilder {
 	
 	@Value("${kafka.bootstrap.servers}")
 	private String bootstrapServers;
 	
 	private static final Logger logger = 
-            LoggerFactory.getLogger(KafkaStreamsConfigAnalyticEvents.class);
+            LoggerFactory.getLogger(KafkaStreamsBuilder.class);
 	
 	@Autowired
 	private ObjectMapper mapper;
@@ -75,48 +78,27 @@ public class KafkaStreamsConfigAnalyticEvents {
         return kafkaStreams;
     }
 
-    
-    public static Predicate<String, String[]> casePredicate() {
-    	  return (key, values) -> {
-    		  return true;
-    	  };
-    }
-    
-    public static Predicate<String, Object> notNull() {
-  	  return (key, value) -> {
-  		  if (value != null)
-  			  return true;
-  		  else
-  			  return false;
-  	  };
-    }
-    
-    public static Predicate<String, String> print() {
-    	  return (key, value) -> {
-    		  if (value != null)
-    			  logger.info(value);
-    			  return true;
-    	  };
-      }
-    
     @SuppressWarnings("unchecked")
    	@Bean
     public Topology kafkaStreamTopology() {
-    	Pipeline p = null;
-    	if (repo.findAll().size() > 0) {
-    		p = repo.findAll().get(0);
-    	}  	
-    	final StreamsBuilder builder = new StreamsBuilder();   	
-    	builder.stream(KafkaConstants.ANALYTIC_EVENT_TOPIC, 
-        		Consumed.with(Serdes.String(), Serdes.String()));
+    	Pipeline p = repo.findOne(); 	
+    	final StreamsBuilder builder = new StreamsBuilder(); 
+    	@SuppressWarnings("rawtypes")
+		KStream<String, Record> stream = 
+		    	builder.stream(p.getInputTopic(), 
+		        		Consumed.with(Serdes.String(), new Serdes.WrapperSerde<Record>(
+								new RecordSerializer(), 
+								new RecordDeserializer())));
     	TreeMap<Integer, Rule> r =  p.parseRules();
     	Set<Integer> keys =r.keySet();
         for (Iterator i = keys.iterator(); i.hasNext();) {
           Integer key = (Integer) i.next();
           Rule value =  r.get(key);
-          value.apply(builder);
-        }
-        
+          value.apply(stream);
+        }    
+        stream.to(p.getOutputTopic(), Produced.with(Serdes.String(), new Serdes.WrapperSerde<Record>(
+								new RecordSerializer(), 
+								new RecordDeserializer())));
     	return builder.build();
     }
 }

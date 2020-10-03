@@ -107,12 +107,11 @@ public class Pipeline {
 		
 		for(Map<String, Object> ruleItem: rule) {
 			String name = ruleItem.get("name").toString();
-			Integer weight = (Integer) ruleItem.get("weight");	
-			
+			Integer weight = (Integer) ruleItem.get("weight");				
 			if (name != null && !name.isEmpty()) {
 				Rule newRule = new Rule(name);
 				Iterator it = ruleItem.entrySet().iterator();			
-			    while (it.hasNext()) {	    
+			    while (it.hasNext()) {
 			    	try {
 				        Map.Entry<String, Object> pair = (Map.Entry)it.next();
 				        if (pair.getKey().startsWith(RuleUtil.IF_KEY) 
@@ -143,14 +142,14 @@ public class Pipeline {
 						        			pair.getKey(), 
 						        			signatureForDo, 
 						        			new Object[] {pair.getValue()}));
-				        }
-			    	ruleSet.put(weight, newRule);
+				       }
 			    } catch (Throwable e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			    	logger.error("Unable to parse rules:");
+			    	e.printStackTrace();
 				}
 			}
-		}
+		    ruleSet.put(weight, newRule);
+		 }
 	  }
 	  return ruleSet;
 	}

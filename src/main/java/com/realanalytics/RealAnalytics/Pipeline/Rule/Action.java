@@ -2,7 +2,9 @@ package com.realanalytics.RealAnalytics.Pipeline.Rule;
 
 import java.util.Map;
 
-import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.kstream.KStream;
+
+import com.realanalytics.RealAnalytics.Pipeline.Record;
 
 import static com.realanalytics.RealAnalytics.Pipeline.Rule.RuleUtil.DO_ALLOW;
 import static com.realanalytics.RealAnalytics.Pipeline.Rule.RuleUtil.DO_MAP;
@@ -18,6 +20,6 @@ public abstract class Action {
 			DO_MAP,				DoMap.class,
 			DO_WINDOW,			DoWindow.class});
 	
-	public abstract void apply(Condition condition, StreamsBuilder builder);
+	public abstract void apply(Condition condition, KStream<String, Record> stream);
 
 }

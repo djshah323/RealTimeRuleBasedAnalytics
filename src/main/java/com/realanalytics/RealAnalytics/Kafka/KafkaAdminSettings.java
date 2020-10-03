@@ -10,6 +10,7 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.TopicConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,11 +25,17 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 
+import com.realanalytics.RealAnalytics.Dao.PipelineRepository;
+import com.realanalytics.RealAnalytics.Pipeline.Pipeline;
+
 @Configuration
 public class KafkaAdminSettings {
 
 	@Value("${kafka.bootstrap.servers}")
 	private String bootstrapServers;
+	
+	@Autowired
+	private PipelineRepository repo;
 	
 	@Bean
 	public KafkaAdmin admin() {
@@ -56,25 +63,6 @@ public class KafkaAdminSettings {
 	}
 	
 	@Bean
-	public NewTopic loginCase() {
-		return TopicBuilder.name(KafkaConstants.LOGIN_CASE_TOPIC)
-				.partitions(2)
-				.replicas(1)
-				.config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
-				.build();
-	}
-	
-	
-	@Bean
-	public NewTopic locCase() {
-		return TopicBuilder.name(KafkaConstants.LOC_CASE_TOPIC)
-				.partitions(2)
-				.replicas(1)
-				.config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
-				.build();
-	}
-	
-	@Bean
 	public NewTopic alerts() {
 		return TopicBuilder.name(KafkaConstants.ALERTS_TOPIC)
 				.partitions(2)
@@ -86,6 +74,26 @@ public class KafkaAdminSettings {
 	@Bean
 	public NewTopic notifs() {
 		return TopicBuilder.name(KafkaConstants.NOTIF_TOPIC)
+				.partitions(2)
+				.replicas(1)
+				.config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
+				.build();
+	}
+	
+	@Bean
+	public NewTopic pipelineInput() {
+		Pipeline p = repo.findOne();
+		return TopicBuilder.name(p.getInputTopic())
+				.partitions(2)
+				.replicas(1)
+				.config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
+				.build();
+	}
+	
+	@Bean
+	public NewTopic pipelineOutput() {
+		Pipeline p = repo.findOne();
+		return TopicBuilder.name(p.getOutputTopic())
 				.partitions(2)
 				.replicas(1)
 				.config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
