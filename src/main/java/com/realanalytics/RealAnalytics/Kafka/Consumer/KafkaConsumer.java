@@ -29,7 +29,7 @@ public class KafkaConsumer {
             groupId = "event_gen")
     public void consume(ConsumerRecord record) 
     {
-        eventService.process((String)record.key(), (String)record.value());
+    	eventService.process((String)record.key(), (String)record.value());
     }
     
     @KafkaListener(topics = KafkaConstants.NOTIF_TOPIC, 

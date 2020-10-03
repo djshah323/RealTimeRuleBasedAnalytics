@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
  
@@ -26,12 +27,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.realanalytics.RealAnalytics.Applications.AppReferer;
 import com.realanalytics.RealAnalytics.Applications.Events.ApplicationEvent;
 import com.realanalytics.RealAnalytics.Dao.AnalyticEventRepository;
+import com.realanalytics.RealAnalytics.Dao.PipelineRepository;
 import com.realanalytics.RealAnalytics.Data.AnalyticEvent;
 import com.realanalytics.RealAnalytics.Events.Services.EventMapper;
 import com.realanalytics.RealAnalytics.Events.Services.EventSanity;
 import com.realanalytics.RealAnalytics.Exceptions.BadEventException;
 import com.realanalytics.RealAnalytics.Exceptions.IllegalAppNameException;
 import com.realanalytics.RealAnalytics.Kafka.Producer.KafkaEventPublisher;
+import com.realanalytics.RealAnalytics.Pipeline.Pipeline;
 
 /**
  * @author SDhaval
@@ -61,6 +64,8 @@ public final class EventService {
 	@Autowired
 	private AnalyticEventRepository eventRepo;
 	
+	@Autowired
+	private PipelineRepository repo ;
 	
 	@RequestMapping(value = "v1/events/{appName}",
 			method = RequestMethod.POST,
@@ -85,7 +90,46 @@ public final class EventService {
 	}
 	
 	
+	@RequestMapping(value = "v1/events",
+			method = RequestMethod.POST,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> postEventGeneric(@RequestParam("p") String pipeline, 
+			@RequestBody Map<String, Object> rawEvent) {
+		try {
+			/*
+			 * Publish the event ASAP to kafka to free up the receiver rest endpoints
+			 */
+			eventPublishingService.sendRawEvent(pipeline, mapper.writeValueAsString(rawEvent));
+		}  catch (JsonProcessingException e) {
+			logger.error("Error parsing payload");
+			return new ResponseEntity<>(response(e.getMessage()), HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<>(response("success"), HttpStatus.CREATED);
+	}
+	
 	public void process(String appName, String eventJson) {
+		Pipeline inUse = null;
+		for (Pipeline p: repo.findAll()) {
+			if (p.getName().equalsIgnoreCase(appName)) {
+				inUse = p;
+				break;
+			}
+		}
+		if (inUse != null) {
+			processPipelineEvents(appName, eventJson);
+		} else {
+			processAppSourcedEvents(appName, eventJson);
+		}
+	}
+
+	public void processPipelineEvents(String pipeline, String eventJson) {
+		logger.info("pipeline events");
+		Pipeline pipe;
+		
+	}
+	
+	public void processAppSourcedEvents(String appName, String eventJson) {
+		logger.info("AppSourced events");
 		try {
 			AppReferer app;
 			ApplicationEvent appevent;
@@ -130,5 +174,6 @@ public final class EventService {
 		} catch (JsonProcessingException e) {
 			logger.error("JsonProcessingException parsing raw event");
 		}
+		
 	}
 }
