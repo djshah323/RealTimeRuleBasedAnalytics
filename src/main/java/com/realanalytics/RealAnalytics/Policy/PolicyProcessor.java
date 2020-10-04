@@ -5,7 +5,11 @@ import static com.realanalytics.RealAnalytics.Kafka.Streams.Utils.fetchFromParse
 import static com.realanalytics.RealAnalytics.Kafka.Streams.Utils.parseKey;
 
 import java.util.List;
+import java.util.Set;
+
 import static java.util.stream.Collectors.toList;
+
+import java.util.Iterator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -224,19 +228,26 @@ public class PolicyProcessor {
 		try {
 			Pipeline p = pRepo.findOne();
 			String grpByAttr = "";
-			String[] allAttrs = notifyRecord.attr.keySet()
-					.toArray(new String[notifyRecord.attr.keySet().size()]);
-			for(String name: allAttrs) {
-				if (name.startsWith("grpBy_")) {
-					grpByAttr = name;
+			Set<String> allAttrs = notifyRecord.attr.keySet();
+			Iterator itr = allAttrs.iterator();
+			while(itr.hasNext()) {
+				String attr = (String) itr.next();
+				if (attr.equals("start")
+						|| attr.equals("end")) 
+					continue;
+				for (String attr2: p.getNotify()) {
+					if (attr.equals(attr2))
+						continue;
 				}
+				grpByAttr = attr;
+				break;
 			}
 			StrmNotification notif = new StrmNotification(
 					Long.valueOf((String) notifyRecord.get(grpByAttr).getValue()), 
 					(String) notifyRecord.get(p.getNotify().get(0)).getValue(), 
 					Long.valueOf((String)notifyRecord.get("start").getValue()), 
 					Long.valueOf((String)notifyRecord.get("end").getValue()), 
-					grpByAttr.split("_")[1], 
+					grpByAttr, 
 					(String) notifyRecord.get(grpByAttr).getValue());
 			return notif;
 		} catch (Exception e) {
