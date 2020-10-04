@@ -12,6 +12,7 @@ import org.apache.kafka.streams.kstream.Produced;
 import org.springframework.stereotype.Service;
 
 import com.realanalytics.RealAnalytics.Kafka.Serdes.RecordDeserializer;
+import com.realanalytics.RealAnalytics.Kafka.Serdes.RecordSerdes;
 import com.realanalytics.RealAnalytics.Kafka.Serdes.RecordSerializer;
 import com.realanalytics.RealAnalytics.Pipeline.Pipeline;
 import com.realanalytics.RealAnalytics.Pipeline.Record;
@@ -33,18 +34,14 @@ public class RuleSandBox {
 		try {
 			KStream<String, Record> stream = 
 			    	builder.stream(p.getInputTopic(), 
-			        		Consumed.with(Serdes.String(), new Serdes.WrapperSerde<Record>(
-									new RecordSerializer(), 
-									new RecordDeserializer())));
+			        		Consumed.with(Serdes.String(), new RecordSerdes()));
 			Set<Integer> keys =rules.keySet();
 	        for (Iterator i = keys.iterator(); i.hasNext();) {
 	          Integer key = (Integer) i.next();
 	          Rule value =  rules.get(key);
 	          stream = value.apply(stream);
 	        }   
-	        stream.to(p.getOutputTopic(), Produced.with(Serdes.String(), new Serdes.WrapperSerde<Record>(
-									new RecordSerializer(), 
-									new RecordDeserializer())));
+	        stream.to(p.getOutputTopic(), Produced.with(Serdes.String(), new RecordSerdes()));
 	        return builder;
 		} catch (Throwable e) {
 			e.printStackTrace();
