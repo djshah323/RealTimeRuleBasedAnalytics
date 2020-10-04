@@ -75,25 +75,5 @@ public class KafkaStreamsBuilder {
     	TreeMap<Integer, Rule> r =  p.parseRules();
     	sandBox.setRules(r);
     	return sandBox.apply(p, builder).build();
-    	/*Pipeline p = repo.findOne(); 	
-    	final StreamsBuilder builder = new StreamsBuilder(); 
-    	@SuppressWarnings("rawtypes")
-		KStream<String, Record> stream = 
-		    	builder.stream(p.getInputTopic(), 
-		        		Consumed.with(Serdes.String(), new Serdes.WrapperSerde<Record>(
-								new RecordSerializer(), 
-								new RecordDeserializer())));
-    	TreeMap<Integer, Rule> r =  p.parseRules();
-    	Set<Integer> keys =r.keySet();
-    	KStream<String, Record> currStream = stream;
-        for (Iterator i = keys.iterator(); i.hasNext();) {
-          Integer key = (Integer) i.next();
-          Rule value =  r.get(key);
-          currStream = value.apply(currStream);
-        }    
-        currStream.to(p.getOutputTopic(), Produced.with(Serdes.String(), new Serdes.WrapperSerde<Record>(
-								new RecordSerializer(), 
-								new RecordDeserializer())));
-    	return builder.build();*/
     }
 }
