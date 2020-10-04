@@ -43,15 +43,25 @@ public abstract class Verb {
 		try {
 			String[] verbs = verbString.split("#");
 			for (String verb: verbs) {
-				Matcher m = Pattern.compile("\\(([^)]+)\\)").matcher(verb);
+				if (verb.isEmpty()) 
+					continue;
+				String actualName = "";
 				String arg = "";
-			     while(m.find()) {
-			       arg = m.group(1);  
-			       break;
-			     }
-			    String actualName = verb.replaceAll("(", "")
-			    		.replaceAll(")", "")
-			    		.replaceAll(arg, "");
+				if (verb.startsWith(VERB_PATTERN)) {
+					int indexStart = verb.indexOf('(');
+					int indexLast = verb.lastIndexOf(')');
+					actualName = VERB_PATTERN;
+					arg = verb.substring(indexStart, indexLast);		
+				} else {
+					Matcher m = Pattern.compile("\\(([^)]+)\\)").matcher(verb);
+				     while(m.find()) {
+				       arg = m.group(1);  
+				       break;
+				     }
+				     actualName = verb.replaceAll("\\(", "")
+				    		.replaceAll("\\)", "")
+				    		.replaceAll(arg, "");
+				}
 			    resolvedVerbs.push((Verb)
 			    		RuleUtil.instantiate(Verb.verbClasses, 
 			    				actualName, 

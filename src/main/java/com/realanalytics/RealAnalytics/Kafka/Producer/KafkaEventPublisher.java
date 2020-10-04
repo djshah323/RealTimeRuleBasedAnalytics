@@ -13,6 +13,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.realanalytics.RealAnalytics.Data.AnalyticEvent;
 import com.realanalytics.RealAnalytics.Kafka.KafkaConstants;
+import com.realanalytics.RealAnalytics.Pipeline.Record;
 
 @Service
 public class KafkaEventPublisher {
@@ -44,6 +45,29 @@ public class KafkaEventPublisher {
 	    });
   }
 
+  public void sendPipelineEvents(String topic, Record message) {
+	  try {
+		  ListenableFuture<SendResult<String, String>> future =
+				  this.kafkaTemplate.send(topic, mapper.writeValueAsString(message));
+		  future.addCallback(new ListenableFutureCallback<SendResult<String, String>>() {
+		      @Override
+		      public void onSuccess(SendResult<String, String> result) {
+		    	logger.info("Pipeline event delivered with offset {}",
+		          result.getRecordMetadata().offset());
+		      }	  
+		      @Override
+		      public void onFailure(Throwable ex) {
+		    	logger.warn("Unable to deliver Pipeline event [{}]. {}", 
+		          message,
+		          ex.getMessage());
+		      }
+		    });
+	  } catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+	  }
+  }
+  
   public void sendAnalyticEvent(AnalyticEvent ae) {	  
 	ListenableFuture<SendResult<String, String>> future;
 	try {

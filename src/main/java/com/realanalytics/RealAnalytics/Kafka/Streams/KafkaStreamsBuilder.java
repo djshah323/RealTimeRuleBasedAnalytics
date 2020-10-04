@@ -1,35 +1,21 @@
 package com.realanalytics.RealAnalytics.Kafka.Streams;
 
-import com.realanalytics.RealAnalytics.Kafka.KafkaConstants;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.realanalytics.RealAnalytics.Dao.PipelineRepository;
-import com.realanalytics.RealAnalytics.Data.AnalyticEvent;
-import com.realanalytics.RealAnalytics.Kafka.Serdes.AnalyticEventDeserializer;
-import com.realanalytics.RealAnalytics.Kafka.Serdes.AnalyticEventSerializer;
 import com.realanalytics.RealAnalytics.Kafka.Serdes.RecordDeserializer;
 import com.realanalytics.RealAnalytics.Kafka.Serdes.RecordSerializer;
-import com.realanalytics.RealAnalytics.Kafka.Serdes.StrmNotificationDeserializer;
-import com.realanalytics.RealAnalytics.Kafka.Serdes.StrmNotificationSerializer;
-import com.realanalytics.RealAnalytics.Notification.StrmNotification;
 import com.realanalytics.RealAnalytics.Pipeline.Pipeline;
 import com.realanalytics.RealAnalytics.Pipeline.Record;
 import com.realanalytics.RealAnalytics.Pipeline.Rule.Rule;
 
 import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.KafkaStreams;
-import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.kstream.Materialized;
-import org.apache.kafka.streams.kstream.Predicate;
 import org.apache.kafka.streams.kstream.Produced;
-import org.apache.kafka.streams.kstream.SessionWindows;
-import org.apache.kafka.streams.state.SessionStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,12 +24,7 @@ import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;

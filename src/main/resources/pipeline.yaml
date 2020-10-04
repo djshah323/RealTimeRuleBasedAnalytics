@@ -2,9 +2,9 @@ name: SamplePipeline
 inputTopic:  raw_events
 outputTopic: notifications
 input:
-   eventid: String
+   eventId: String
    user: String
-   userid: String
+   userId: String
    email: String
    srcIp: String
    createDate: String
@@ -47,5 +47,5 @@ rule:
      do-map: "#concat(#key(),#value(id))"
    - name: group
      weight: 60
-     do-window: "#window(value-srcip, 5)"
+     do-window: "#window(srcip,5)"
   

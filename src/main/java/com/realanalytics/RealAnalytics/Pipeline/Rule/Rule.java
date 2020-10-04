@@ -6,11 +6,11 @@ import com.realanalytics.RealAnalytics.Pipeline.Record;
 
 public class Rule {
 	
-	String name;
+	private String name;
 	
-	Condition condition = null;
+	private Condition condition = null;
 	
-	Action action = null;
+	private Action action = null;
 	
 	public Rule(String name) {
 		this.name = name;
@@ -24,7 +24,19 @@ public class Rule {
 		this.condition = instantiate;	
 	}
 	
+	public Condition getCondition() {
+		return this.condition;
+	}
+	
 	public void action(Action instantiate) {
 		this.action = instantiate;
+	}
+	
+	public Action getAction() {
+		return this.action;
+	}
+
+	public String getName() {
+		return name;
 	}
 }

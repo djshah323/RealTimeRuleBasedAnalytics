@@ -3,6 +3,8 @@
  */
 package com.realanalytics.RealAnalytics.Events;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import static com.realanalytics.RealAnalytics.Events.Utils.response;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.realanalytics.RealAnalytics.Applications.AppReferer;
 import com.realanalytics.RealAnalytics.Applications.Events.ApplicationEvent;
@@ -34,7 +37,9 @@ import com.realanalytics.RealAnalytics.Events.Services.EventSanity;
 import com.realanalytics.RealAnalytics.Exceptions.BadEventException;
 import com.realanalytics.RealAnalytics.Exceptions.IllegalAppNameException;
 import com.realanalytics.RealAnalytics.Kafka.Producer.KafkaEventPublisher;
+import com.realanalytics.RealAnalytics.Pipeline.Attribute;
 import com.realanalytics.RealAnalytics.Pipeline.Pipeline;
+import com.realanalytics.RealAnalytics.Pipeline.Record;
 
 /**
  * @author SDhaval
@@ -116,16 +121,35 @@ public final class EventService {
 			}
 		}
 		if (inUse != null) {
-			processPipelineEvents(appName, eventJson);
+			processPipelineEvents(inUse, eventJson);
 		} else {
 			processAppSourcedEvents(appName, eventJson);
 		}
 	}
 
-	public void processPipelineEvents(String pipeline, String eventJson) {
+	public void processPipelineEvents(Pipeline pipeline, String eventJson) {
 		logger.info("pipeline events");
-		Pipeline pipe;
-		
+		try {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> event = (HashMap<String, Object>) 
+					mapper.readValue(eventJson, HashMap.class);
+			Record newRec = new Record();
+			Iterator<String> pipelineAttrs = pipeline.getInput().keySet().iterator();
+			while(pipelineAttrs.hasNext()) {
+				String attrname = pipelineAttrs.next();
+				String type = pipeline.getInput().get(attrname);
+				Attribute newAttr = new Attribute(attrname, type);
+				newAttr.setValue(event.get(attrname));
+				newRec.add(newAttr);
+			}
+			eventPublishingService.sendPipelineEvents(pipeline.getInputTopic(), newRec);
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void processAppSourcedEvents(String appName, String eventJson) {
