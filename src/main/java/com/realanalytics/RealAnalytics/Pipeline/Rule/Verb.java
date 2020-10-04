@@ -8,20 +8,23 @@ import static com.realanalytics.RealAnalytics.Pipeline.Rule.RuleUtil.VERB_STRING
 import static com.realanalytics.RealAnalytics.Pipeline.Rule.RuleUtil.VERB_VALUE;
 import static com.realanalytics.RealAnalytics.Pipeline.Rule.RuleUtil.VERB_WINDOW;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.realanalytics.RealAnalytics.Pipeline.Record;
 
 public abstract class Verb {
 	
-	String arg;
+	protected String arg;
+	
+	protected  final Logger logger = 
+            LoggerFactory.getLogger(Verb.class); 
 	
 	public static Map verbClasses = RuleUtil.createMap(new Object[] {
 			VERB_ANY,				VerbAny.class,

@@ -40,3 +40,6 @@ src/main/resources/GeoLite2-City.mmdb
 
 ### metadata ###
 .metadata/
+
+### logs ###
+/logs

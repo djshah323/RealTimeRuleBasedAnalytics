@@ -1,5 +1,6 @@
 package com.realanalytics.RealAnalytics.Pipeline.Rule;
 
+import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -20,6 +21,8 @@ public class VerbConcat extends Verb {
 			returnValue.append(concatValue);
 		}
 		evaluation.clear();
+		logger.info(MessageFormat.format("{0} returns key {1}", 
+				VerbConcat.class.getSimpleName(), returnValue.toString()));
 		return returnValue.toString();
 	}
 

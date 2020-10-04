@@ -16,8 +16,8 @@ public class Rule {
 		this.name = name;
 	}
 	
-	public void apply(KStream<String, Record> stream) {
-		action.apply(condition, stream);
+	public KStream<String, Record> apply(KStream<String, Record> stream) {
+		return action.apply(condition, stream);
 	}
 
 	public void condition(Condition instantiate) {

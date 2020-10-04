@@ -23,12 +23,19 @@ public class DoWindow extends Action implements HasVerb {
 	}
 	
 	@Override
-	public void apply(Condition condition, KStream<String, Record> stream) {
+	public KStream<String, Record> apply(Condition condition, KStream<String, Record> stream) {
+		KStream<String, Record> streamSendBack = stream;
+		String conditionLogText = condition != null ? 
+				condition.getClass().getSimpleName() : "None";
+		this.logger.info("Action: " + DoWindow.class.getSimpleName());
+		this.logger.info("Verb size: " + verb.size());
+		this.logger.info("Condition: " + conditionLogText);
 		if (condition != null) {
-			stream.filter((key, rec) -> {
+			streamSendBack = streamSendBack.filter((key, rec) -> {
 				return condition.evaluate(key, rec);
 			});	
 		}
+		
 		Verb v = verb.pop();
 		String windowMeta = v.call(null, null, null);
 		String attr = windowMeta.split(",")[0];
@@ -36,10 +43,16 @@ public class DoWindow extends Action implements HasVerb {
 		if (timeWindow == null || timeWindow.isEmpty()) 
 			timeWindow = "5";
 		Integer t = Integer.parseInt(timeWindow);
-		stream.groupBy((key, rec) -> key)
-		.windowedBy(SessionWindows.with(Duration.ofMinutes(t)))
-		.count(Materialized.<String, Long, SessionStore<Bytes, byte[]>>as(attr)
-                .withKeySerde(Serdes.String())
-                .withValueSerde(Serdes.Long()));
+		streamSendBack = streamSendBack.groupBy((key, rec) -> key)
+			.windowedBy(SessionWindows.with(Duration.ofMinutes(t)))
+			.count(Materialized.<String, Long, SessionStore<Bytes, byte[]>>as(attr)
+	                .withKeySerde(Serdes.String())
+	                .withValueSerde(Serdes.Long()))
+			.toStream()
+			.map((key, value) -> new KeyValue<String, Record>(key.key(), 
+					new Record.RecordBuilder()
+					.addAttr("count", Long.toString(value))
+					.build()));
+		return streamSendBack;
 	}
 }

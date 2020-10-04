@@ -25,7 +25,8 @@ public class IfValue extends Condition implements HasVerb {
 			while(verb.isEmpty())
 				evaluation.addLast(verb.pop()
 						.call(evaluation, key, rec));	
-			if (evaluation.getFirst().equalsIgnoreCase(""))
+			if (evaluation.size() == 0 
+					|| evaluation.getFirst().equalsIgnoreCase(""))
 				return true;
 			switch(this.operator) {
 				case Condition.EQ: {

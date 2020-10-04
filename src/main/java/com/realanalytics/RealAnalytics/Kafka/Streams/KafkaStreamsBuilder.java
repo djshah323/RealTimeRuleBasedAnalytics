@@ -2,20 +2,15 @@ package com.realanalytics.RealAnalytics.Kafka.Streams;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.realanalytics.RealAnalytics.Dao.PipelineRepository;
-import com.realanalytics.RealAnalytics.Kafka.Serdes.RecordDeserializer;
-import com.realanalytics.RealAnalytics.Kafka.Serdes.RecordSerializer;
 import com.realanalytics.RealAnalytics.Pipeline.Pipeline;
-import com.realanalytics.RealAnalytics.Pipeline.Record;
 import com.realanalytics.RealAnalytics.Pipeline.Rule.Rule;
+import com.realanalytics.RealAnalytics.Pipeline.Rule.RuleSandBox;
 
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.kstream.Consumed;
-import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.kstream.Produced;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +19,7 @@ import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Iterator;
 import java.util.Properties;
-import java.util.Set;
 import java.util.TreeMap;
 
 @Configuration
@@ -43,6 +36,9 @@ public class KafkaStreamsBuilder {
 	
 	@Autowired
 	private PipelineRepository repo;
+	
+	@Autowired
+	private RuleSandBox sandBox;
 	
     @Bean
     public KafkaStreams kafkaStreams(KafkaProperties kafkaProperties,
@@ -62,24 +58,10 @@ public class KafkaStreamsBuilder {
     @SuppressWarnings("unchecked")
    	@Bean
     public Topology kafkaStreamTopology() {
-    	Pipeline p = repo.findOne(); 	
     	final StreamsBuilder builder = new StreamsBuilder(); 
-    	@SuppressWarnings("rawtypes")
-		KStream<String, Record> stream = 
-		    	builder.stream(p.getInputTopic(), 
-		        		Consumed.with(Serdes.String(), new Serdes.WrapperSerde<Record>(
-								new RecordSerializer(), 
-								new RecordDeserializer())));
+    	Pipeline p = repo.findOne(); 	
     	TreeMap<Integer, Rule> r =  p.parseRules();
-    	Set<Integer> keys =r.keySet();
-        for (Iterator i = keys.iterator(); i.hasNext();) {
-          Integer key = (Integer) i.next();
-          Rule value =  r.get(key);
-          value.apply(stream);
-        }    
-        stream.to(p.getOutputTopic(), Produced.with(Serdes.String(), new Serdes.WrapperSerde<Record>(
-								new RecordSerializer(), 
-								new RecordDeserializer())));
-    	return builder.build();
+    	sandBox.setRules(r);
+    	return sandBox.apply(p, builder).build();
     }
 }
