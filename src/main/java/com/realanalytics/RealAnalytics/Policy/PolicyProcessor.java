@@ -20,12 +20,17 @@ import com.realanalytics.RealAnalytics.Alerts.StrmAlert;
 import com.realanalytics.RealAnalytics.Alerts.Alert.AlertType;
 import com.realanalytics.RealAnalytics.Alerts.Alert.Severity;
 import com.realanalytics.RealAnalytics.Dao.AlertRepository;
+import com.realanalytics.RealAnalytics.Dao.PipelineRepository;
 import com.realanalytics.RealAnalytics.Dao.PolicyRepository;
 import com.realanalytics.RealAnalytics.Dao.UserRepository;
 import com.realanalytics.RealAnalytics.Data.StrmPolicy;
 import com.realanalytics.RealAnalytics.Data.User;
+import com.realanalytics.RealAnalytics.Kafka.KafkaConstants;
+import com.realanalytics.RealAnalytics.Kafka.Serdes.RecordDeserializer;
 import com.realanalytics.RealAnalytics.Notification.Notification;
 import com.realanalytics.RealAnalytics.Notification.StrmNotification;
+import com.realanalytics.RealAnalytics.Pipeline.Pipeline;
+import com.realanalytics.RealAnalytics.Pipeline.Record;
 
 @Service
 public class PolicyProcessor {
@@ -54,22 +59,32 @@ public class PolicyProcessor {
 	private AlertRepository alertRepo;
 	
 	@Autowired
+	private PipelineRepository pRepo;
+	
+	@Autowired
 	ObjectMapper mapper;
 	
 	
 	public void handle(String key, String value) {
-		
 		logger.info("Notification Received:" + key);
+		
+		Record notifyRecord =
+				new RecordDeserializer()
+				.deserialize(KafkaConstants.NOTIF_TOPIC, 
+						value.getBytes());
+		
+		if (notifyRecord == null) {
+			logger.warn("Bad notify record");
+		}
 		
 		checkPolicyRefresh();
 		
-		final StrmNotification notif = fetchNotification(key, value);
+		final StrmNotification notif = fetchNotification(key, notifyRecord);
 		
 		if (notif != null) {		
 			List<Policy> applicablePolicies = configuredPolicies
 									.stream()
-									.filter(policy -> notif.getGroupedBy(policy.getMatchType()) != null
-													&& policy.getOperation().equalsIgnoreCase(notif.getOperation()))
+									.filter(policy -> notif.getGroupedBy(policy.getMatchType()) != null)
 									.collect(toList());
 			
 			if(applicablePolicies.size() > 0) {
@@ -141,12 +156,6 @@ public class PolicyProcessor {
 			 *  then this is a failed login alert
 			 */
 			User user = usrrepo.findById(notif.getActor());
-			if (user == null) {
-				if (notif.getOperation() == "UserLoggedIn"
-						&& notif.getGroupedBy("User").equalsIgnoreCase("Unknown")) {
-					return AlertType.RiskyLogin;
-				}
-			}	
 			return AlertType.FailedLogin;
 		} else if (notif.getGroupedBy("Country") != null) {
 			/*
@@ -211,18 +220,27 @@ public class PolicyProcessor {
 	}
 
 
-	private StrmNotification fetchNotification(String key, String value) {
+	private StrmNotification fetchNotification(String key, Record notifyRecord) {
 		try {
-			StrmNotification notif =
-					mapper.readValue(value, StrmNotification.class);
-			notif.setGroupedBy(fetchFromParsedKey(MATCH_POS, parseKey(key))
-									.split(":")[0],
-							   fetchFromParsedKey(MATCH_POS, parseKey(key))
-							   		.split(":")[1]);
+			Pipeline p = pRepo.findOne();
+			String grpByAttr = "";
+			String[] allAttrs = notifyRecord.attr.keySet()
+					.toArray(new String[notifyRecord.attr.keySet().size()]);
+			for(String name: allAttrs) {
+				if (name.startsWith("grpBy_")) {
+					grpByAttr = name;
+				}
+			}
+			StrmNotification notif = new StrmNotification(
+					Long.valueOf((String) notifyRecord.get(grpByAttr).getValue()), 
+					(String) notifyRecord.get(p.getNotify().get(0)).getValue(), 
+					Long.valueOf((String)notifyRecord.get("start").getValue()), 
+					Long.valueOf((String)notifyRecord.get("end").getValue()), 
+					grpByAttr.split("_")[1], 
+					(String) notifyRecord.get(grpByAttr).getValue());
 			return notif;
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			logger.error("Error translating to StrmNotification");
 		}
 		return null;
 	}

@@ -4,19 +4,15 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.realanalytics.RealAnalytics.Data.StrmPolicy;
 import com.realanalytics.RealAnalytics.Pipeline.Rule.Rule;
 import com.realanalytics.RealAnalytics.Pipeline.Rule.RuleUtil;
 import com.realanalytics.RealAnalytics.Pipeline.Rule.Actions.Action;
@@ -36,6 +32,8 @@ public class Pipeline {
 	private String outputTopic;
 	
 	private Map<String, String> input;
+	
+	private List<String> notify;
 	
 	private List<Map<String, Object>> rule;
 	
@@ -152,5 +150,13 @@ public class Pipeline {
 		 }
 	  }
 	  return ruleSet;
+	}
+
+	public List<String> getNotify() {
+		return notify;
+	}
+
+	public void setNotify(List<String> notify) {
+		this.notify = notify;
 	}
 }

@@ -23,5 +23,4 @@ public class RecordDeserializer implements Deserializer {
 		   }
 		   return ae;
 	}
-
 }
