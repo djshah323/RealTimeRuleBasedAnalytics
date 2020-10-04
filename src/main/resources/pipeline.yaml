@@ -32,7 +32,7 @@ rule:
      do-allow: 
    - name: allow-filter
      weight: 35
-     if-value-srcip:
+     if-value-srcIp:
        match: "#pattern(^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$)"
      do-allow: 
    - name: deny-filter
@@ -44,8 +44,8 @@ rule:
      weight: 50
      if-key:
        eq: "#any()"
-     do-map: "#concat(#key(),#value(id))"
+     do-map: "#concat(#key(),#value(city))"
    - name: group
      weight: 60
-     do-window: "#window(srcip,5)"
+     do-window: "#window(srcIp,5)"
   

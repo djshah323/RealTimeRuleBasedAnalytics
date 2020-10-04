@@ -18,13 +18,7 @@ public class DoMap extends ActionWithVerb {
 	
 	@Override
 	public KStream<String, Record> apply(Condition condition, KStream<String, Record> stream) {
-		Stack<Verb> verb = initVerb();
 		KStream<String, Record> streamSendBack = stream;
-		String conditionLogText = condition != null ? 
-					condition.getClass().getSimpleName() : "None";				
-		this.logger.info("Action: " + DoMap.class.getSimpleName());
-		this.logger.info("Verb size: " + verb.size());
-		this.logger.info("Condition: " + conditionLogText);
 		try {
 			if (condition != null) {
 				streamSendBack = streamSendBack.filter((key, rec) -> {
@@ -32,6 +26,7 @@ public class DoMap extends ActionWithVerb {
 				});	
 			}
 			streamSendBack = streamSendBack.map((key, rec) -> {
+				Stack<Verb> verb = initVerb();
 				if (verb.size() == 0) {
 					return new KeyValue<String, Record>(key, rec);
 				} else if (verb.size() == 1) {

@@ -27,11 +27,6 @@ public class DoWindow extends ActionWithVerb {
 		Stack<Verb> verb = initVerb();
 		KStream<String, Record> streamSendBack = stream;
 		try {
-			String conditionLogText = condition != null ? 
-					condition.getClass().getSimpleName() : "None";
-			this.logger.info("Action: " + DoWindow.class.getSimpleName());
-			this.logger.info("Verb size: " + verb.size());
-			this.logger.info("Condition: " + conditionLogText);
 			if (condition != null) {
 				streamSendBack = streamSendBack.filter((key, rec) -> {
 					return condition.evaluate(key, rec);
