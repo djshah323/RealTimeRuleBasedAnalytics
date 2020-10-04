@@ -1,4 +1,4 @@
-package com.realanalytics.RealAnalytics.Pipeline.Rule;
+package com.realanalytics.RealAnalytics.Pipeline.Rule.Conditions;
 
 
 import static com.realanalytics.RealAnalytics.Pipeline.Rule.RuleUtil.IF_KEY;
@@ -8,9 +8,12 @@ import java.util.Map;
 import java.util.Stack;
 
 import com.realanalytics.RealAnalytics.Pipeline.Record;
+import com.realanalytics.RealAnalytics.Pipeline.Rule.RuleUtil;
+import com.realanalytics.RealAnalytics.Pipeline.Rule.Verbs.HasVerb;
+import com.realanalytics.RealAnalytics.Pipeline.Rule.Verbs.Verb;
 
 
-public abstract class Condition {
+public abstract class Condition implements HasVerb {
 	
 	//operators
 	
@@ -24,12 +27,13 @@ public abstract class Condition {
 	
 	protected String operator;
 	protected String targetAttr;
+	private Stack<Verb> verb;
 	
-	protected Condition(String targetAttr, String operator) {
+	protected Condition(String targetAttr, String operator, String verb) {
 		this.operator = operator;
 		this.targetAttr = targetAttr.split("-").length == 2 ? targetAttr.split("-")[1] 
 					: targetAttr.split("-")[2];
-		
+		this.verb = Verb.resolveVerbs(verb);
 	}
 	
 	public static Map conditionClasses = RuleUtil.createMap(new Object[] {
@@ -37,4 +41,11 @@ public abstract class Condition {
 			IF_VALUE,		IfValue.class});
 	
 	public abstract boolean evaluate(String key, Record value);
+	
+	@Override
+	public Stack<Verb> initVerb() {
+		Stack<Verb> newStack = new Stack<Verb>();
+		newStack.addAll(verb);
+		return newStack;
+	}
 }

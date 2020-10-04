@@ -1,4 +1,4 @@
-package com.realanalytics.RealAnalytics.Pipeline.Rule;
+package com.realanalytics.RealAnalytics.Pipeline.Rule.Verbs;
 
 import static com.realanalytics.RealAnalytics.Pipeline.Rule.RuleUtil.VERB_ANY;
 import static com.realanalytics.RealAnalytics.Pipeline.Rule.RuleUtil.VERB_CONCAT;
@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.realanalytics.RealAnalytics.Pipeline.Record;
+import com.realanalytics.RealAnalytics.Pipeline.Rule.RuleUtil;
 
 public abstract class Verb {
 	

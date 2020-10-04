@@ -1,4 +1,4 @@
-package com.realanalytics.RealAnalytics.Pipeline.Rule;
+package com.realanalytics.RealAnalytics.Pipeline.Rule.Verbs;
 
 import java.text.MessageFormat;
 import java.util.Iterator;

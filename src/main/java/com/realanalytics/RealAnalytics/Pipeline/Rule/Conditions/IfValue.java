@@ -1,4 +1,4 @@
-package com.realanalytics.RealAnalytics.Pipeline.Rule;
+package com.realanalytics.RealAnalytics.Pipeline.Rule.Conditions;
 
 import java.util.LinkedList;
 import java.util.Stack;
@@ -6,18 +6,17 @@ import java.util.regex.Pattern;
 
 import com.realanalytics.RealAnalytics.Pipeline.Attribute;
 import com.realanalytics.RealAnalytics.Pipeline.Record;
+import com.realanalytics.RealAnalytics.Pipeline.Rule.Verbs.Verb;
 
-public class IfValue extends Condition implements HasVerb {
-
-	Stack<Verb> verb;
+public class IfValue extends Condition {
 	
 	public IfValue(String targetAttr, String operator, String verb) {
-		super(targetAttr, operator);
-		this.verb = Verb.resolveVerbs(verb);
+		super(targetAttr, operator, verb);
 	}
 
 	@Override
 	public boolean evaluate(String key, Record rec) {
+		Stack<Verb> verb = initVerb();
 		LinkedList<String> evaluation = new LinkedList<String>();
 		Attribute attr = rec.get(this.targetAttr);
 		if (attr != null) {

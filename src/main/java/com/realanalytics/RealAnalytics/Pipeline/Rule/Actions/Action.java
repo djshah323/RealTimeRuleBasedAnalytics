@@ -1,4 +1,4 @@
-package com.realanalytics.RealAnalytics.Pipeline.Rule;
+package com.realanalytics.RealAnalytics.Pipeline.Rule.Actions;
 
 import java.util.Map;
 
@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.realanalytics.RealAnalytics.Pipeline.Record;
+import com.realanalytics.RealAnalytics.Pipeline.Rule.RuleUtil;
+import com.realanalytics.RealAnalytics.Pipeline.Rule.Conditions.Condition;
 
 import static com.realanalytics.RealAnalytics.Pipeline.Rule.RuleUtil.DO_ALLOW;
 import static com.realanalytics.RealAnalytics.Pipeline.Rule.RuleUtil.DO_MAP;

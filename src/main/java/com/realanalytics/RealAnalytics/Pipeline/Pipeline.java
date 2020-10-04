@@ -17,10 +17,10 @@ import org.springframework.stereotype.Repository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.realanalytics.RealAnalytics.Data.StrmPolicy;
-import com.realanalytics.RealAnalytics.Pipeline.Rule.Action;
-import com.realanalytics.RealAnalytics.Pipeline.Rule.Condition;
 import com.realanalytics.RealAnalytics.Pipeline.Rule.Rule;
 import com.realanalytics.RealAnalytics.Pipeline.Rule.RuleUtil;
+import com.realanalytics.RealAnalytics.Pipeline.Rule.Actions.Action;
+import com.realanalytics.RealAnalytics.Pipeline.Rule.Conditions.Condition;
 
 @Repository
 public class Pipeline {
