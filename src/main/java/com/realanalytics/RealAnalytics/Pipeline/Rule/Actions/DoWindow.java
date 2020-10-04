@@ -47,7 +47,7 @@ public class DoWindow extends ActionWithVerb {
 				.toStream()
 				.map((key, value) -> new KeyValue<String, Record>(key.key(), 
 						new Record.RecordBuilder()
-						.addAttr("count", Long.toString(value))
+						.addAttr(attr, Long.toString(value))
 						.build()));
 		} catch (Throwable e) {
 			e.printStackTrace();
