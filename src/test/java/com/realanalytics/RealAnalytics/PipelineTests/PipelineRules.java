@@ -57,9 +57,10 @@ public class PipelineRules {
 	public void pipelineParseTest() {
 		Pipeline p = fetchPipeline();
 		assertNotNull(p);
+		assertEquals(2,p.getNotify().size());
 		Map<Integer, Rule> rules = p.parseRules();
 		assertNotNull(rules);
-		assertEquals(7, rules.size());
+		assertEquals(3, rules.size());
 		Iterator  ruleItr = rules.keySet().iterator();
 		while(ruleItr.hasNext()) {
 			Rule r = rules.get(ruleItr.next());

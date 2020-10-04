@@ -31,23 +31,16 @@ public class StrmNotification
 	 */
 	private Map<String, String> groupedBy;
 	
-	/*
-	 * AnalyticEvent operation
-	 */
-	private String operation;
-	
 
 	public StrmNotification(Long count,
 					String actor,
 					Long starttime,
 					Long endtime,
-					String operation,
 					String groupByKey,
 					String groupByValue) {
 		groupedBy = new HashMap<String, String>();
 		this.count = count;
 		this.actor = actor;
-		this.operation = operation;
 		this.starttime = starttime;
 		this.endtime = endtime;
 		this.groupedBy.put(groupByKey, groupByValue);
@@ -91,13 +84,5 @@ public class StrmNotification
 
 	public void setGroupedBy(String groupedByKey, String groupedByValue) {
 		this.groupedBy.put(groupedByKey, groupedByValue);
-	}
-
-	public String getOperation() {
-		return operation;
-	}
-
-	public void setOperation(String operation) {
-		this.operation = operation;
 	}
 }

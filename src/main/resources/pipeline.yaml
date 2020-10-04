@@ -1,5 +1,5 @@
 name: SamplePipeline
-inputTopic:  raw_events
+inputTopic:  analytic_events
 outputTopic: notifications
 input:
    eventId: String
@@ -14,37 +14,20 @@ input:
    deviceName: String
    deviceAuth: String
    application: String
+notify:
+   - userId
+   - email
 rule:
    - name: map
      weight: 10
      if-key:
        eq: "#any()"
-     do-map: "#value(email)"
-   - name: deny-filter
-     weight: 20
-     if-key:
-       eq: "#string(ceo@abc.com)"
-     do-deny:         
-   - name: allow-filter
-     weight: 30
-     if-value-email:
-       match: "#pattern(*@microsoft.com)"
-     do-allow: 
+     do-map: "#value(email)"         
    - name: allow-filter
      weight: 35
      if-value-srcIp:
        match: "#pattern(^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$)"
      do-allow: 
-   - name: deny-filter
-     weight: 40
-     if-value-id:
-        eq: "#string()"
-     do-deny:
-   - name: map
-     weight: 50
-     if-key:
-       eq: "#any()"
-     do-map: "#concat(#key(),#value(city))"
    - name: group
      weight: 60
      do-window: "#window(srcIp,5)"
